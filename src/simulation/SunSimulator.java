@@ -56,5 +56,6 @@ public class SunSimulator {
 
         // Refresh UI
         frame.refresh();
+        frame.fullBatteryMessage();
     }
 }

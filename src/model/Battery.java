@@ -3,7 +3,7 @@ package model;
 public class Battery {
     private double capacity; // Total capacity in kWh (or Wh)
     private double currentCharge; // Current charge in kWh
-    
+
     public Battery(double capacity) {
         this.capacity = capacity;
         this.currentCharge = 0.0;
@@ -26,7 +26,8 @@ public class Battery {
     }
 
     public double getPercentage() {
-        if (capacity == 0) return 0;
+        if (capacity == 0)
+            return 0;
         return (currentCharge / capacity) * 100.0;
     }
 
@@ -36,5 +37,14 @@ public class Battery {
 
     public double getCapacity() {
         return capacity;
+    }
+
+    public void setCapacity(double capacity) {
+        this.capacity = capacity;
+        // If new capacity is lower than current charge, clamp it?
+        // Or just let it overfill visually? Let's clamp for safety.
+        if (this.currentCharge > this.capacity) {
+            this.currentCharge = this.capacity;
+        }
     }
 }

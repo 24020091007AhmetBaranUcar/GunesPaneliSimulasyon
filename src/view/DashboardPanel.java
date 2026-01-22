@@ -62,22 +62,62 @@ public class DashboardPanel extends JPanel {
         }
         add(panelsGrid, BorderLayout.CENTER);
 
-        // Bottom: Battery Status
-        JPanel batteryPanel = new JPanel(new FlowLayout());
-        batteryPanel.setBackground(new Color(40, 44, 52));
+        // Bottom: Battery Status & Controls
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        bottomPanel.setBackground(new Color(40, 44, 52));
+
+        // Battery Display
+        JPanel batteryDisplay = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        batteryDisplay.setOpaque(false);
 
         batteryLabel = new JLabel("Battery: 0%");
         batteryLabel.setForeground(Color.GREEN);
         batteryLabel.setFont(new Font("Arial", Font.BOLD, 18));
 
         batteryBar = new JProgressBar(0, 100);
-        batteryBar.setPreferredSize(new Dimension(300, 30));
+        batteryBar.setPreferredSize(new Dimension(200, 30));
         batteryBar.setValue(0);
         batteryBar.setStringPainted(true);
 
-        batteryPanel.add(batteryLabel);
-        batteryPanel.add(batteryBar);
-        add(batteryPanel, BorderLayout.SOUTH);
+        batteryDisplay.add(batteryLabel);
+        batteryDisplay.add(batteryBar);
+
+        // Controls & Info
+        JPanel controlsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        controlsPanel.setOpaque(false);
+
+        JLabel noteLabel = new JLabel("Note: 1 sim sec = 1 min charging");
+        noteLabel.setForeground(Color.LIGHT_GRAY);
+        noteLabel.setFont(new Font("Arial", Font.ITALIC, 12));
+
+        JLabel capLabel = new JLabel("Capacity (kWh):");
+        capLabel.setForeground(Color.WHITE);
+
+        JTextField capInput = new JTextField("100", 5);
+        JButton updateBtn = new JButton("Set");
+
+        updateBtn.addActionListener(e -> {
+            try {
+                double newCap = Double.parseDouble(capInput.getText());
+                if (newCap > 0) {
+                    battery.setCapacity(newCap);
+                    JOptionPane.showMessageDialog(this, "Battery capacity set to " + newCap + " kWh");
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Invalid number format", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        controlsPanel.add(noteLabel);
+        controlsPanel.add(Box.createHorizontalStrut(20));
+        controlsPanel.add(capLabel);
+        controlsPanel.add(capInput);
+        controlsPanel.add(updateBtn);
+
+        bottomPanel.add(batteryDisplay, BorderLayout.WEST);
+        bottomPanel.add(controlsPanel, BorderLayout.EAST);
+
+        add(bottomPanel, BorderLayout.SOUTH);
     }
 
     public void updateView() {
@@ -95,5 +135,18 @@ public class DashboardPanel extends JPanel {
         int batPct = (int) battery.getPercentage();
         batteryBar.setValue(batPct);
         batteryLabel.setText(String.format("Battery: %.1f%%", battery.getPercentage()));
+    }
+
+    private boolean messageShown = false;
+
+    public void fullBatteryMessage() {
+        if (battery.getPercentage() >= 100) {
+            if (!messageShown) {
+                JOptionPane.showMessageDialog(this, "Battery is full!", "Warning", JOptionPane.WARNING_MESSAGE);
+                messageShown = true;
+            }
+        } else {
+            messageShown = false;
+        }
     }
 }

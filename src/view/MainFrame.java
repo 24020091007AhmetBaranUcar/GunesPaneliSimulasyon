@@ -23,4 +23,8 @@ public class MainFrame extends JFrame {
     public void refresh() {
         dashboard.updateView();
     }
+
+    public void fullBatteryMessage() {
+        dashboard.fullBatteryMessage();
+    }
 }
